@@ -1,0 +1,118 @@
+Model classes 
+1. customer.class.php
+2. table.class.php
+
+
+
+Controllers
+1. logincontr.class.php
+
+
+Views
+1. index.php
+
+
+                while ($row = $stmt->fetchAll()) {
+                    switch ($fieldType) {
+                        case 'option':
+            ?>
+                            <br>
+                            <?php
+                            while ($row = $stmt->fetchAll()) {
+                            ?>
+                                <option name="<?php echo $row[$columnName] ?>" value="<?php echo $row[$columnName] ?>"><?php echo $row[$columnName] ?></option>
+                            <?php
+
+                            }
+
+                            break;
+                        case 'checkbox':
+                            while ($row = $stmt->fetchAll()) {
+                            ?>
+                                <br>
+                                <input type="checkbox" name="<?php echo $row[$columnName] . '[]' ?>" value="<?php echo $row[$columnName] ?>">
+                                <label for="<?php echo $row[$columnName] . '[]' ?>"><?php echo $row[$columnName] ?></label>
+                            <?php
+
+                            }
+
+                            break;
+                        case 'radio':
+                            while ($row = $stmt->fetchAll()) {
+                            ?>
+                                <br>
+                                <input type="radio" name="<?php echo $row[$columnName] ?>" value="<?php echo $row[$columnName] ?>">
+                                <label for="<?php echo $row[$columnName] ?>"><?php echo $row[$columnName] ?></label>
+                            <?php
+
+                            }
+                            break;
+
+                        default:
+                            echo "Invalid Input field";
+                    }
+                }
+
+                // function readRefTable($fieldType, $tableName, $columnName)
+// {
+//     try 
+//     {
+//         $sql = "SELECT * from `$tableName`";
+//         $stmt = connectDb()->prepare($sql);
+//         if ($stmt->execute()) {
+//             $stmt->execute();
+//             $result = $stmt->fetchAll();
+//             // print_r($result);
+
+//                 // echo "<br>";
+//                 // echo $row[$columnName];
+//                 switch ($fieldType) {
+//                     case 'option':
+//                     ?>
+//                         <br>
+//                         <?php
+//                         foreach($result as $row)
+//                         {
+//                         ?>
+//                             <option name="<?php echo $row[$columnName] ?>" value="<?php echo $row[$columnName] ?>"><?php echo $row[$columnName] ?></option>
+//                         <?php
+
+//                         }
+
+//                         break;
+//                     case 'checkbox':
+//                         foreach($result as $row){
+//                         ?>
+//                             <br>
+//                             <input type="checkbox" name="<?php echo $row[$columnName] . '[]' ?>" value="<?php echo $row[$columnName] ?>">
+//                             <label for="<?php echo $row[$columnName] . '[]' ?>"><?php echo $row[$columnName] ?></label>
+//                         <?php
+
+//                         }
+
+//                         break;
+//                     case 'radio':
+//                         foreach($result as $row){
+//                         ?>
+//                             <br>
+//                             <input type="radio" name="<?php echo $row[$columnName] ?>" value="<?php echo $row[$columnName] ?>">
+//                             <label for="<?php echo $row[$columnName] ?>"><?php echo $row[$columnName] ?></label>
+//                         <?php
+
+//                         }
+//                         break;
+
+//                     default:
+//                         echo "Invalid Input field";
+//                 }
+            
+//             }
+//     } 
+//     catch (PDOException $e) 
+//     {
+//         echo $e;
+//     }
+// }    <!--Make Table Constant Reference Table-->
+<!-- <h1>Enter Table Number</h1>
+<h2>Welcome <?php echo $_SESSION["userName"] ?></h2>
+<h3>Are you logged in? <?php echo printLoggedIn() ?></h3> -->

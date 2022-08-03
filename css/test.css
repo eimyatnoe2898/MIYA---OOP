@@ -1,0 +1,17 @@
+body
+{
+    background-color: aquamarine;
+}
+
+.container
+{
+    width:80%;
+    margin: auto;
+    overflow: hidden;
+}
+
+#main-header
+{
+    background-color: orangered;
+    color:white;
+}

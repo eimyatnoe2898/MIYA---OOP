@@ -1,0 +1,17 @@
+/* body {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 700;
+} */
+
+.image
+{
+    text-align: center;
+    margin: 24px 0 12px 0;
+    position: relative;
+}
+
+.heading2
+{
+    color:#909090;
+}

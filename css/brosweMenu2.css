@@ -1,0 +1,9 @@
+hr.rounded {
+    border-top: 10px solid #bbb;
+    border-radius: 5px;
+  }
+
+  body
+  {
+      background-color: rgb(222, 196, 255);
+  }

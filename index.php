@@ -98,7 +98,7 @@ if (isset($_POST["memberSignin"])) {
             // $mSignInSuccess['userNotFound'] = 'User found';
             $mSignInSuccess['signInAttempt'] = 'Sign in success';
             setName($loginContr->getName());
-            $_SESSION['userName']
+            // $_SESSION['userName']
             setLoggedIn(true);
             header("refresh:1;url=enterTable.php");
         } else if ($loginContr->checkUserMember() == 0) {

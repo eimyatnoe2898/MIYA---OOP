@@ -4,10 +4,7 @@ DROP TABLE if exists `notifications`;
 CREATE TABLE `notifications` 
 (	
 	`notification id` int auto_increment,
-    `status`  enum(
-			'read',
-            'unread')
-	NOT NULL,
+    `status`  boolean NOT NULL default 0,
     `for?`  set(
 			'master',
             'admin',

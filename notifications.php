@@ -1,6 +1,8 @@
 <?php
 include 'includes/readTablesMethods.inc.php';
 
+//    <!--Through jquery, on click update the status to 1 read-->
+
 ?>
 
 
@@ -16,32 +18,53 @@ include 'includes/readTablesMethods.inc.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
     </body>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+
+            function fetchUnreadNotifications()
+            {
+                $.ajax({
+                    url: "fetchUnreadNotifications.php",
+                    method : "POST",
+                    success: function(data)
+                    {
+                        $("#unreadNotification").html(data);
+                    }
+                })
+            }
+
+            setInterval(function()
+            {
+                fetchUnreadNotifications()
+            }, 1000);
+
+
+            $("#navbarDropdownMenuLink").on("click", function() {
+                $.ajax({
+                    url: "readNotifications.php",
+                    success: function() {
+                        console.log('Update Success');
+                    }
+                });
+            });
+
+            
+
+        });
+
+
+
+                    // setInterval(function() {
+                    //     fetchUsers()
+                    // }, 1000)
+
+                    //another function to update notifications amount
+                    //set interval to 5000 milliseconds
+    </script>
 </head>
 
 <body>
-    <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand" href="#">Navbar</a>
-        <a class="navbar-brand" href="#">
-            <div class="dropdown show">
-                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Notifications (<?php echo 1 ?>)
-                </a>
-
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    <!--Add the dropdowns here-->
-                    <!-- <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <a class="dropdown-item" href="#">Something else here</a> -->
-                    <?php
-                    ?>
-                    <a class="dropdown-item" href="#"><?php echo 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo, fuga nisi placeat quae quisquam harum veniam culpa. Consequuntur pariatur aliquam corrupti ullam? Exercitationem, non doloremque aperiam pariatur molestiae ex consectetur.' ?></a>
-                    <div class="dropdown-divider"></div>
-
-                </div>
-            </div>
-        </a>
-
-    </nav>
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">MIYA</a>
@@ -60,29 +83,38 @@ include 'includes/readTablesMethods.inc.php';
                     <a class="nav-link" href="#">Check Cart</a>
                 </li>
                 <li class="nav-item dropdown">
+                    <?php
+
+                    // $unreadSql = "SELECT COUNT(*) FROM `notifications` WHERE `status` = ?";
+                    // $unreadRows = getCount($unreadSql, array(0));
+
+                    ?>
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Notifications (<?php echo 1 ?>)
+                        Notifications (<span id="unreadNotification"></span>)
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <?php
-                        $sql = "SELECT FROM `notifications` WHERE `status` = ? ORDER BY `notification id` DESC";
-                        $notifications = getRows($sql, array(0));
-                        echo "blank";
-                        $readSql = "SELECT COUNT(*) FROM `notifications` WHERE `status` = ?";
-                        $unread = getCount($readSql, array(1));
-                        $unreadSql = "SELECT COUNT(*) FROM `notifications` WHERE `status` = ?";
-                        $read = getCount($unreadSql, array(0));
+                        $sql = "SELECT * FROM notifications ORDER BY `notification id` DESC";
+                        $rows = getRows($sql, array());
+                        foreach ($rows as $notification) {
                         ?>
-                        <a class="dropdown-item" href="#">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt deserunt tenetur aut aspernatur ab inventore deleniti nemo error libero eligendi!</a>
+                            <a class="dropdown-item" href="#"><?php echo $notification['content'] ?></a>
+                            <div class="dropdown-divider"></div>
+                        <?php
+
+                        }
+                        ?>
+                        <!-- <a class="dropdown-item" href="#">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt deserunt tenetur aut aspernatur ab inventore deleniti nemo error libero eligendi!</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="#">Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit voluptatum a id laudantium itaque dignissimos. Ea atque dolorum culpa reiciendis?</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium tempore nemo, expedita sequi et earum maiores error officiis omnis recusandae.</a>
+                        <a class="dropdown-item" href="#">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium tempore nemo, expedita sequi et earum maiores error officiis omnis recusandae.</a> -->
                     </div>
                 </li>
             </ul>
         </div>
     </nav>
+
 
 </body>
 

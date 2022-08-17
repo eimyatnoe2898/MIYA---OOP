@@ -13,7 +13,7 @@ CREATE TABLE `food menus`
     `main category` varchar(50) NOT NULL,
 	`sub category` varchar(50),
     `name` varchar(50) NOT NULL,
-    `raw meat?` boolean default false,
+    `raw meat` boolean default false,
     `price` decimal(10,2) NOT NULL,
     `notes` varchar(255),
     `in stock` int default 0,

@@ -66,7 +66,7 @@ CREATE TABLE `order records`
 	`price` decimal(10,2) NOT NULL,
 	`notes` longtext DEFAULT NULL,
 	`quantity` int NOT NULL,
-    `to go?` boolean NOT NULL,
+    `to go` boolean NOT NULL,
 	`total price` decimal(10,2) NOT NULL,
 	`order status` varchar(25) NOT NULL,
     `customer notes` varchar(250) default null,

@@ -12,3 +12,6 @@ $_SESSION['cart']
 $_SESSION['sub customers list']
 $_SESSION['checked in at']
 $_SESSION['checked out at']
+
+$_COOKIE['userName']
+$_COOKIE['individual visit id']

@@ -9,8 +9,8 @@ session_start();
 echo $_SESSION['userName'];
 
 // Check if the user is logged in, if not then redirect him to landing paget
-if (!isset($_SESSION["loggedIn"]) || $_SESSION["loggedIn"] !== true) {
-    header("location:/MIYA_OOP/index.php?error=notloggedIn");
+if (!isset($_SESSION['logged in?']) || $_SESSION['logged in?'] != true) {
+    header("location:../index.php?error=notloggedIn");
     exit;
 }
 
@@ -20,6 +20,19 @@ $tableNumber = $tableOccupancyId = '';
 $tableError = '';
 $tableSuccess = '';
 $tableOccupancy = 'checked in';
+
+
+// if(isset($_COOKIE['username']))
+// {
+//     //This will be controlled by user attempt to leave modal form - like are you sure you want to leave
+//     //Any unsaved changes will be lost - yes or no like this 
+//     //if yes => the cookie for logged in will be changed to false
+//     //customer has quit browsing
+//     //search in individual visits
+    
+
+// }
+
 
 //Table Number error handlers
 //is it empty?

@@ -2,8 +2,7 @@
 // declare(strict_types = 1);
 include 'includes/autoloader.inc.php';
 include 'includes/formErrorHandlers.inc.php';
-include 'includes/sessionMethods.inc.php';
-
+include 'includes/readTablesMethods.inc.php';
 
 session_start();
 
@@ -14,6 +13,10 @@ $gSignInErrors = array('name' => null, 'signInAttempt' => null);
 $gSignInSuccess = array('name' => null, 'signInAttempt' => null);
 $useremail = $userpassword = null;
 $guestName = null;
+$cartArr = $serviceRequests = $subCustomers = array();
+$cartLength = $serviceRequestLength = $subCustomersLength = 0;
+
+//what if I store the individual visit id as cookie and then it can identify everything -- APPROVED
 
 //Guest Sign in Controller
 //Form Validation
@@ -25,7 +28,7 @@ if (isset($_POST["guestSignin"])) {
         //show error
         $gSignInErrors['name'] = 'Guest name should not be blank';
         $gSignInErrors['signInAttempt'] = 'Check in Failed';
-    //if it is not empty
+        //if it is not empty
     } else {
         //check valid string
         if (checkvalidString($guestName) == false) {
@@ -34,14 +37,101 @@ if (isset($_POST["guestSignin"])) {
         } elseif (checkvalidString($guestName) == true) {
             $gSignInSuccess['name'] = 'Valid Guest Name';
             $gSignInSuccess['signInAttempt'] = 'Check in Success';
-            // setName($guestName);
-            //set session variable
-            $_SESSION['userName'] = $guestName;
-            echo $_SESSION['userName'];
-            // setLoggedIn(true);
-            //set login variable
-            $_SESSION['loggedin?'] = true;
-            header("refresh:1;url=enterTable.php");
+
+            //is the customer recently signed in?
+            //if it is yes
+            if (isset($_COOKIE['individual visit id'])) {
+                //look up the customer information from db
+                $sql = "SELECT * FROM `individual visits` WHERE `individual visit id` = ?";
+                $result1 = executeSql($sql, array($_COOKIE['individual visit id']));
+                if (count($result1) == 1) {
+                    //assign the retrieved values to session variables
+                    $foundCustomer = $result1[0];
+                    $_SESSION['customer type'] = $foundCustomer['customer type'];
+                    $_SESSION['userName'] = $foundCustomer['name'];
+                    $_SESSION['member id'] = $foundCustomer['member id'];
+                    $_SESSION['individual visit id'] = $foundCustomer['individual visit id'];
+                    $_SESSION['table occupancy id'] = $foundCustomer['table occupancy id'];
+
+                    //retrieve table number
+                    $sql = "SELECT * FROM `table occupancy` WHERE `table number` = ?";
+                    $result2 = executeSql($sql, array($_SESSION['table occupancy id']));
+                    $tableOccupancyRecord = $result2[0];
+                    $_SESSION['table number'] = $tableOccupancyRecord['table number'];
+                    $_SESSION['logged in?'] = $foundCustomer['logged in?'];
+                    $_SESSION['order status'] = $foundCustomer['order status'];
+
+                    //retrieve service request list
+                    $sql = "SELECT * FROM `service requests` WHERE `individual visit id` = ?";
+                    $result2 = executeSql($sql, array($_COOKIE['individual visit id']));
+                    // $serviceRequestLength = 0;
+                    foreach ($result2 as $row) {
+                        $serviceRequest = array(
+                            "service request" => $row['service requested']
+                        );
+                        $_SESSION['service requests'][$serviceRequestLength] = $serviceRequest;
+                        $serviceRequestLength++;
+                    }
+
+                    //retrieving orders list to assign in cart
+                    // $orderItemsLength = 0;
+                    $sql = "SELECT * FROM `order records` WHERE `individual visit id` = ?";
+                    $result2 = executeSql($sql, array($_COOKIE['individual visit id']));
+                    foreach ($result2 as $row) {
+                        $order = array(
+                            "order" => $row['service requested']
+                        );
+                        $_SESSION['cart'][$cartLength] = $order;
+                        $cartLength++;
+                    }
+
+                    //retrieving sub customers list
+                    $subCustomersLength = 0;
+                    $sql = "SELECT * FROM `sub customers` WHERE `individual visit id` = ?";
+                    $_SESSION['sub customers list'] = 0;
+                    $result2 = executeSql($sql, array($_COOKIE['individual visit id']));
+                    foreach ($result2 as $row) {
+                        $subCustomer = array(
+                            "sub customer" => $row['service requested']
+                        );
+                        $_SESSION['sub customers list'][$subCustomersLength] = $subCustomer;
+                        $subCustomersLength++;
+                    }
+
+                    $_SESSION['checked in at'] = $foundCustomer['checked in at'];
+                    $_SESSION['checked out at'] = $foundCustomer['checked out at'];
+                    // header("refresh:1;url=enterTable.php");
+                }
+
+                //check if this customer was signed in within last 10 minutes
+                //store them in session variables
+            }
+
+            //if it is no
+            //just store guest name, individual visit id, logged in status
+            else if (!isset($_COOKIE['individual visit id'])) {
+                //we have to add the customer as new record into individual visits
+                $sql = "INSERT INTO `individual visits`(`name`, `logged in`) VALUES (?,?)";
+                // insertSql($sql, ["Ei", true]);
+                insertSql($sql, array("Mason", true));
+                echo connectDb()->lastInsertId();
+                // $sql = "SELECT * from `individual visits` WHERE `individual visit id` = ? AND `name` = ?";
+                // $stmt = connectDb()->prepare($sql);
+                // $stmt->execute([$guestName, true]);
+                // echo "New record added to <h3>Members</h3> successfully";
+                // echo $result[0]['customer type'];
+
+                //store them in session variables
+                // $_SESSION['userName'] = $guestName;
+                // $_SESSION['logged in?'] = true;
+
+                // $sql = "SELECT `individual visit id` from `individual visits` ORDER BY `individual visit id` DESC LIMIT 1";
+                // $result4 = executeSql($sql, array());
+                // $newVisitID = $result4[0];
+                // $_SESSION['individual visit id'] = $newVisitID['individual vist id'];
+                // header("refresh:1;url=enterTable.php");
+
+            }
         } else {
             $gSignInSuccess['signInAttempt'] = 'Check in Failed';
         }
@@ -98,8 +188,10 @@ if (isset($_POST["memberSignin"])) {
             // $mSignInSuccess['userNotFound'] = 'User found';
             $mSignInSuccess['signInAttempt'] = 'Sign in success';
             setName($loginContr->getName());
+            $_SESSION["userName"] = $loginContr->getName();
             // $_SESSION['userName']
-            setLoggedIn(true);
+            // setLoggedIn(true);
+            $_SESSION["loggedIn"] = true;
             header("refresh:1;url=enterTable.php");
         } else if ($loginContr->checkUserMember() == 0) {
             $mSignInErrors['signInAttempt'] = 'User not found. Please sign up first!';
@@ -225,9 +317,9 @@ if (isset($_POST["memberSignin"])) {
     <!--View Templates-->
     <!--Guest Check in View Template-->
     <!--Log in form-->
-    <div class = "main">
+    <div class="main">
         <div class="mainstyle">
-            <div class="image" id = "logo1">
+            <div class="image" id="logo1">
                 <img src="Images/Logo.jpg" alt="Logo" class="logo1">
             </div>
 
@@ -258,9 +350,10 @@ if (isset($_POST["memberSignin"])) {
 
             <!--divider-->
             <div class="divider">
-                <span><p class="first-half"></p><span>
-                <p>OR</p>
-                <p class="second-half"></p>
+                <span>
+                    <p class="first-half"></p><span>
+                        <p>OR</p>
+                        <p class="second-half"></p>
 
             </div>
 
@@ -305,7 +398,7 @@ if (isset($_POST["memberSignin"])) {
             </div>
         </div>
 
-        </div>
+    </div>
     </div>
 
 </body>

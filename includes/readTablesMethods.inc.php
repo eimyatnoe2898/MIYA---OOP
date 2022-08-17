@@ -81,23 +81,6 @@ catch (PDOException $e)
 }
 }
 
-function readRefTableArr($tableName)
-{
-    try 
-    {
-        $sql = "SELECT * from `$tableName`";
-        $stmt = connectDb()->prepare($sql);
-        if ($stmt->execute()) {
-            $stmt->execute();
-            $result = $stmt->fetchAll();
-        }
-        return $result;
-    } 
-    catch (PDOException $e) 
-    {
-        echo $e;
-    }
-}
 
 function executeSql($sqlStmt, $bindValues)
 {
@@ -112,6 +95,55 @@ function executeSql($sqlStmt, $bindValues)
         echo $sqlStmt . $e->getMessage();
         return $e->getMessage();
     }
+}
+
+function insertSql($sqlStmt, $bindValues)
+{
+    $result = "";
+    try{
+        $stmt = connectDb()-> prepare($sqlStmt);
+        $stmt->execute($bindValues);
+        $result = "Data Addition successful";
+        echo $result;
+    }
+    catch(PDOException $e)
+    {
+        echo $sqlStmt. $e->getMessage();
+    }
+
+}
+
+function getRows($sql, $values)
+{
+	// $sql = "SELECT FROM `$tableName` WHERE `email` = ?";
+    try {
+        // $sql = "SELECT * from members WHERE `email` = ? AND `password` = ?";
+        $stmt = connectDb()->prepare($sql);
+        $stmt->execute($values);
+        $result = $stmt->fetchAll();
+        return $result;
+    } catch (PDOException $e) {   
+        // echo $stmt . $e->getMessage();
+        return $e->getMessage();
+    }
+
+
+}
+
+function getCount($sql, $values)
+{
+	$sql = "SELECT COUNT(*) FROM `participant` WHERE `email` = ?";
+    try {
+        // $sql = "SELECT * from members WHERE `email` = ? AND `password` = ?";
+        $stmt = connectDb()->prepare($sql);
+        $stmt->execute($values);
+        $result = $stmt->fetchColumn();
+        return $result;
+    } catch (PDOException $e) {
+        // echo $stmt . $e->getMessage();
+        return $e->getMessage();
+    }
+	// $sql = "SELECT * from `drink menus` WHERE `main category` = '$category'";
 }
 
 

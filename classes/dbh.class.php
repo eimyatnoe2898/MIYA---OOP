@@ -24,14 +24,6 @@ class Dbh
             print "Error!: " . $e->getMessage();
             die();
         }
-        // $dsn = 'mysql:host='.$this->serverName.';dbname='.$this->dbName;
-        // $pdo = new PDO($dsn, $this->dbUsername, $this->dbPassword);
-        // //setting fetch mode
-        // $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-        // //setting error mode
-        // $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        // return $pdo;
     }
 
     protected function checkUserExists($email, $password)

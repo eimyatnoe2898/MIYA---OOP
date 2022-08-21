@@ -31,6 +31,6 @@ if(isset($_POST["submit"]))
 
     //Going back to front page
     
-
+}
 
 ?>

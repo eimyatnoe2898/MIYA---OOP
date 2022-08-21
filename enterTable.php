@@ -9,17 +9,17 @@ session_start();
 echo $_SESSION['userName'];
 
 // Check if the user is logged in, if not then redirect him to landing paget
-if (!isset($_SESSION['logged in?']) || $_SESSION['logged in?'] != true) {
+if (!isset($_SESSION['logged in']) || $_SESSION['logged in'] != true) {
     header("location:../index.php?error=notloggedIn");
     exit;
 }
 
 
 //initialize variables
-$tableNumber = $tableOccupancyId = '';
-$tableError = '';
-$tableSuccess = '';
-$tableOccupancy = 'checked in';
+// $tableNumber = $tableOccupancyId = '';
+// $tableError = '';
+// $tableSuccess = '';
+// $tableOccupancy = 'checked in';
 
 
 // if(isset($_COOKIE['username']))
@@ -160,8 +160,8 @@ else if(isset($_POST['']))
                     <?php echo $tableSuccess ?>
                 </p>
                 <br>
-                <input type="submit" id = "myBtn" name="submitTable" value="Submit Survey">
-                <input type="submit" name="checkMenu" value="Skip to browse menu">
+                <input type="submit" id = "myBtn" name="submitTable" value= "Submit Table Number">
+                <input type="submit" name="checkMenu" value= "Skip to browse menu">
             </form>
 
             <!--Skip to browse menu-->

@@ -11,9 +11,12 @@ $mSignInErrors = array('email' => null, 'password' => null, 'userNotFound' => nu
 $mSignInSuccess = array('email' => null, 'password' => null, 'userNotFound' => null, 'signInAttempt' => null);
 $gSignInErrors = array('name' => null, 'signInAttempt' => null);
 $gSignInSuccess = array('name' => null, 'signInAttempt' => null);
+$guestVariables = array('name' => null);
+$memberVariables = array('email' => null, 'password' => null);
+$individualVisitVariables = array('name' => null, 'individual visit id' => null, 'logged in' => null, 'customer type' => null, 'member id' => null, 'order status' => null, 'table occupancy id' => null, 'checked in at' => null, 'checked out at' => null);
 $useremail = $userpassword = null;
 $guestName = null;
-$cartArr = $serviceRequests = $subCustomers = array();
+$cartArr = $serviceRequests = $subCustomers = null;
 $cartLength = $serviceRequestLength = $subCustomersLength = 0;
 
 //what if I store the individual visit id as cookie and then it can identify everything -- APPROVED
@@ -40,66 +43,81 @@ if (isset($_POST["guestSignin"])) {
 
             //is the customer recently signed in?
             //if it is yes
-            if (isset($_COOKIE['individual visit id'])) {
+            if (isset($_COOKIE["individualVisitId"])) {
                 //look up the customer information from db
-                $sql = "SELECT * FROM `individual visits` WHERE `individual visit id` = ?";
-                $result1 = executeSql($sql, array($_COOKIE['individual visit id']));
+                $sql = "SELECT * FROM `individual visits` WHERE `individual visit id` = ? LIMIT 1";
+                $result1 = executeSql($sql, array($_COOKIE["individualVisitId"]));
                 if (count($result1) == 1) {
-                    //assign the retrieved values to session variables
+                    //assign the basic retrieved values to session variables
                     $foundCustomer = $result1[0];
                     $_SESSION['customer type'] = $foundCustomer['customer type'];
                     $_SESSION['userName'] = $foundCustomer['name'];
                     $_SESSION['member id'] = $foundCustomer['member id'];
                     $_SESSION['individual visit id'] = $foundCustomer['individual visit id'];
+                    $_SESSION['logged in'] = $foundCustomer['logged in'];
+                    $_SESSION['order status'] = $foundCustomer['order status'];
+                    $_SESSION['checked in at'] = $foundCustomer['checked in at'];
                     $_SESSION['table occupancy id'] = $foundCustomer['table occupancy id'];
 
-                    //retrieve table number
-                    $sql = "SELECT * FROM `table occupancy` WHERE `table number` = ?";
-                    $result2 = executeSql($sql, array($_SESSION['table occupancy id']));
-                    $tableOccupancyRecord = $result2[0];
-                    $_SESSION['table number'] = $tableOccupancyRecord['table number'];
-                    $_SESSION['logged in?'] = $foundCustomer['logged in?'];
-                    $_SESSION['order status'] = $foundCustomer['order status'];
+                    echo $_SESSION['userName'];
+                    echo $_SESSION['customer type'];
+                    echo $_SESSION['member id'];
+                    echo $_SESSION['individual visit id'];
+                    echo $_SESSION['logged in'];
+                    echo $_SESSION['order status'];
+                    echo $_SESSION['checked in at'];
+                    echo $_SESSION['table occupancy id'];
 
-                    //retrieve service request list
-                    $sql = "SELECT * FROM `service requests` WHERE `individual visit id` = ?";
-                    $result2 = executeSql($sql, array($_COOKIE['individual visit id']));
-                    // $serviceRequestLength = 0;
-                    foreach ($result2 as $row) {
-                        $serviceRequest = array(
-                            "service request" => $row['service requested']
-                        );
-                        $_SESSION['service requests'][$serviceRequestLength] = $serviceRequest;
-                        $serviceRequestLength++;
+
+                    // //retrieve table number
+                    if ($_SESSION['table occupancy id'] != null) {
+                        $sql = "SELECT * FROM `table occupancy` WHERE `table number` = ?";
+                        $result2 = executeSql($sql, array($_SESSION['table occupancy id']));
+                        $tableOccupancyRecord = $result2[0];
+                        $_SESSION['table number'] = $tableOccupancyRecord['table number'];
                     }
 
-                    //retrieving orders list to assign in cart
-                    // $orderItemsLength = 0;
-                    $sql = "SELECT * FROM `order records` WHERE `individual visit id` = ?";
-                    $result2 = executeSql($sql, array($_COOKIE['individual visit id']));
-                    foreach ($result2 as $row) {
-                        $order = array(
-                            "order" => $row['service requested']
-                        );
-                        $_SESSION['cart'][$cartLength] = $order;
-                        $cartLength++;
-                    }
 
-                    //retrieving sub customers list
-                    $subCustomersLength = 0;
-                    $sql = "SELECT * FROM `sub customers` WHERE `individual visit id` = ?";
-                    $_SESSION['sub customers list'] = 0;
-                    $result2 = executeSql($sql, array($_COOKIE['individual visit id']));
-                    foreach ($result2 as $row) {
-                        $subCustomer = array(
-                            "sub customer" => $row['service requested']
-                        );
-                        $_SESSION['sub customers list'][$subCustomersLength] = $subCustomer;
-                        $subCustomersLength++;
-                    }
+                    // //retrieve service request list
 
-                    $_SESSION['checked in at'] = $foundCustomer['checked in at'];
-                    $_SESSION['checked out at'] = $foundCustomer['checked out at'];
+                    // $sql = "SELECT * FROM `service requests` WHERE `individual visit id` = ?";
+                    // $result2 = executeSql($sql, array($_COOKIE["individualVisitId"]));
+                    // // $serviceRequestLength = 0;
+                    // foreach ($result2 as $row) {
+                    //     $serviceRequest = array(
+                    //         "service request" => $row['service requested']
+                    //     );
+                    //     $_SESSION['service requests'][$serviceRequestLength] = $serviceRequest;
+                    //     $serviceRequestLength++;
+                    // }
+
+                    // //retrieving orders list to assign in cart
+                    // // $orderItemsLength = 0;
+                    // $sql = "SELECT * FROM `order records` WHERE `individual visit id` = ?";
+                    // $result2 = executeSql($sql, array($_COOKIE["individualVisitId"]));
+                    // foreach ($result2 as $row) {
+                    //     $order = array(
+                    //         "order" => $row['service requested']
+                    //     );
+                    //     $_SESSION['cart'][$cartLength] = $order;
+                    //     $cartLength++;
+                    // }
+
+                    // //retrieving sub customers list
+                    // $subCustomersLength = 0;
+                    // $sql = "SELECT * FROM `sub customers` WHERE `individual visit id` = ?";
+                    // $_SESSION['sub customers list'] = 0;
+                    // $result2 = executeSql($sql, array($_COOKIE["individualVisitId"]));
+                    // foreach ($result2 as $row) {
+                    //     $subCustomer = array(
+                    //         "sub customer" => $row['service requested']
+                    //     );
+                    //     $_SESSION['sub customers list'][$subCustomersLength] = $subCustomer;
+                    //     $subCustomersLength++;
+                    // }
+
+                    // $_SESSION['checked in at'] = $foundCustomer['checked in at'];
+                    // $_SESSION['checked out at'] = $foundCustomer['checked out at'];
                     // header("refresh:1;url=enterTable.php");
                 }
 
@@ -109,28 +127,41 @@ if (isset($_POST["guestSignin"])) {
 
             //if it is no
             //just store guest name, individual visit id, logged in status
-            else if (!isset($_COOKIE['individual visit id'])) {
+            else if (!isset($_COOKIE["individualVisitId"])) {
+
                 //we have to add the customer as new record into individual visits
                 $sql = "INSERT INTO `individual visits`(`name`, `logged in`) VALUES (?,?)";
                 // insertSql($sql, ["Ei", true]);
-                insertSql($sql, array("Mason", true));
-                echo connectDb()->lastInsertId();
-                // $sql = "SELECT * from `individual visits` WHERE `individual visit id` = ? AND `name` = ?";
-                // $stmt = connectDb()->prepare($sql);
-                // $stmt->execute([$guestName, true]);
-                // echo "New record added to <h3>Members</h3> successfully";
-                // echo $result[0]['customer type'];
+                insertSql($sql, array($guestName, true));
+                $sql = "SELECT * FROM `individual visits` ORDER BY `individual visit id` DESC LIMIT 1;
+                ";
+                $lastInsertedRow = getRows($sql, null)[0];
+                // $lastInsertedId = getColumn($sql, null, 'individual visit id');
+                // var_dump($lastInsertedRow);
+                // $value = $lastInsertedRow['individual visit id'];
+                // setcookie("TestCookie", $value);
 
-                //store them in session variables
-                // $_SESSION['userName'] = $guestName;
-                // $_SESSION['logged in?'] = true;
+                //set individual id as cookie
+                setcookie("individualVisitId", $lastInsertedRow['individual visit id']);
+                echo $_COOKIE["individualVisitId"];
 
-                // $sql = "SELECT `individual visit id` from `individual visits` ORDER BY `individual visit id` DESC LIMIT 1";
-                // $result4 = executeSql($sql, array());
-                // $newVisitID = $result4[0];
-                // $_SESSION['individual visit id'] = $newVisitID['individual vist id'];
-                // header("refresh:1;url=enterTable.php");
+                $_SESSION['customer type'] = $lastInsertedRow['customer type'];
+                $_SESSION['userName'] = $lastInsertedRow['name'];
+                $_SESSION['member id'] = $lastInsertedRow['member id'];
+                $_SESSION['individual visit id'] = $lastInsertedRow['individual visit id'];
+                $_SESSION['logged in'] = $lastInsertedRow['logged in'];
+                $_SESSION['order status'] = $lastInsertedRow['order status'];
+                $_SESSION['checked in at'] = $lastInsertedRow['checked in at'];
+                $_SESSION['table occupancy id'] = $lastInsertedRow['table occupancy id'];
 
+                echo $_SESSION['userName'];
+                echo $_SESSION['customer type'];
+                echo $_SESSION['member id'];
+                echo $_SESSION['individual visit id'];
+                echo $_SESSION['logged in'];
+                echo $_SESSION['order status'];
+                echo $_SESSION['checked in at'];
+                echo $_SESSION['table occupancy id'];
             }
         } else {
             $gSignInSuccess['signInAttempt'] = 'Check in Failed';
@@ -138,9 +169,7 @@ if (isset($_POST["guestSignin"])) {
     }
 }
 
-
-//Member Sign in Controller
-//Form Validation
+//Procedural way 
 if (isset($_POST["memberSignin"])) {
     //get the posted form values and store them in variables
     $useremail = trim($_POST['useremail']);
@@ -149,59 +178,208 @@ if (isset($_POST["memberSignin"])) {
     echo $userpassword;
     // $userpassword = password_hash($_POST['userpassword'], PASSWORD_DEFAULT);
     //Create a Member Login Controller
-    $loginContr = new LoginContr($useremail, $userpassword);
+    // $loginContr = new LoginContr($useremail, $userpassword);
 
-    //if all errorhandlers are validated
-    if ($loginContr->checkemptyEmail() == false) {
+    //check error handlers
+    if (checkEmpty($useremail) == false) {
         $mSignInErrors['email'] = 'Email should not be blank';
         $mSignInErrors['signInAttempt'] = 'Sign in failed';
     } else {
-        if ($loginContr->checkvalidEmail() == false) {
+        if (checkEmail($useremail) == false) {
             $mSignInErrors['email'] = 'Invalid Email';
             $mSignInErrors['signInAttempt'] = 'Sign in failed';
-        } elseif ($loginContr->checkvalidEmail() == true) {
+        } elseif (checkEmail($useremail) == true) {
             $mSignInSuccess['email'] = 'Valid Email';
             // $mSignInSuccess['signInAttempt'] = 'Sign in Success';
-        } else {
-            $mSignInErrors['signInAttempt'] = 'Sign in failed';
         }
-    }
 
-    //check pwd empty and valid password
-    if ($loginContr->checkemptyPwd() == false) {
-        $mSignInErrors['password'] = 'Password should not be blank';
-        $mSignInErrors['signInAttempt'] = 'Sign in failed';
-    } else {
-        //check the hashed password
-        // if($loginContr->checkPassword())
-        // {
-
-        // }
-
-        $mSignInSuccess['password'] = 'Valid password';
-    }
-
-    //check if user already exists in database
-
-    if ($mSignInErrors['email'] == null && $mSignInErrors['password'] == null) {
-        if ($loginContr->checkUserMember() == 1) {
-            // $mSignInSuccess['userNotFound'] = 'User found';
-            $mSignInSuccess['signInAttempt'] = 'Sign in success';
-            setName($loginContr->getName());
-            $_SESSION["userName"] = $loginContr->getName();
-            // $_SESSION['userName']
-            // setLoggedIn(true);
-            $_SESSION["loggedIn"] = true;
-            header("refresh:1;url=enterTable.php");
-        } else if ($loginContr->checkUserMember() == 0) {
-            $mSignInErrors['signInAttempt'] = 'User not found. Please sign up first!';
-            // $mSignInErrors['signInAttempt'] = 'Sign in failed';
-
-        } else {
+        //check pwd empty and valid password
+        if (checkEmpty($userpassword) == false) {
+            $mSignInErrors['password'] = 'Password should not be blank';
             $mSignInErrors['signInAttempt'] = 'Sign in failed';
+        } else {
+            //check the hashed password
+            $mSignInSuccess['password'] = 'Valid password';
+        }
+
+
+        // if ($mSignInErrors['email'] != null && $mSignInErrors['password'] != null) {
+        //     $mSignInErrors['signInAttempt'] = 'Sign in failed';
+        if ($mSignInSuccess['email'] != null && $mSignInSuccess['password'] != null) {
+            //check if the member is already signed up
+            $sql = "SELECT * FROM `members` WHERE `email` = ? and `password` = ?";
+            $result2 = executeSql($sql, array($useremail, $userpassword));
+            // echo $memberName;
+            //if the member is signed up - yes
+            if (count($result2) == 1) {
+                //check the cookie
+                //if there is a set cookie
+                $memberId = $result2[0]['id'];
+                $memberName = $result2[0]['first name'];
+                if (isset($_COOKIE["individualVisitId"])) {
+
+                    // echo "Printing cookie id";
+                    // echo $_COOKIE['individualVisitId'];
+                    // print_r($_COOKIE);
+                    //retrieve all information from individual visit
+                    echo "<br>";
+                    echo "if cookie is set, ";
+                    $sql = "SELECT * FROM `individual visits` WHERE `individual visit id` = ? LIMIT 1";
+                    $result2 = executeSql($sql, array($_COOKIE["individualVisitId"]));
+                    //assign the basic retrieved values to session variables
+                    $foundMember = $result2[0];
+                    $_SESSION['customer type'] = $foundMember['customer type'];
+                    $_SESSION['userName'] = $foundMember['name'];
+                    $_SESSION['member id'] = $foundMember['member id'];
+                    $_SESSION['individual visit id'] = $foundMember['individual visit id'];
+                    $_SESSION['logged in'] = $foundMember['logged in'];
+                    $_SESSION['order status'] = $foundMember['order status'];
+                    $_SESSION['checked in at'] = $foundMember['checked in at'];
+                    $_SESSION['table occupancy id'] = $foundMember['table occupancy id'];
+
+                    echo "the session variables are";
+                    echo $_SESSION['userName'];
+                    echo $_SESSION['customer type'];
+                    echo $_SESSION['member id'];
+                    echo $_SESSION['individual visit id'];
+                    echo $_SESSION['logged in'];
+                    echo $_SESSION['order status'];
+                    echo $_SESSION['checked in at'];
+                    echo $_SESSION['table occupancy id'];
+
+                    // //retrieve table number
+                    if ($_SESSION['table occupancy id'] != null) {
+                        $sql = "SELECT * FROM `table occupancy` WHERE `table number` = ?";
+                        $result2 = executeSql($sql, array($_SESSION['table occupancy id']));
+                        $tableOccupancyRecord = $result2[0];
+                        $_SESSION['table number'] = $tableOccupancyRecord['table number'];
+                    }
+                }
+
+                //if there is no set cookie
+                else if (!isset($_COOKIE['individualVisitId'])) {
+                    echo "<br>";
+                    echo "if cookie is not set, ";
+                    //create a new record in individual visits
+                    $sql = "INSERT INTO `individual visits`(`member id`, `name`, `logged in`) VALUES (?,?,?)";
+                    insertSql($sql, array($memberId, $memberName, true));
+                    $sql = "SELECT * FROM `individual visits` ORDER BY `individual visit id` DESC LIMIT 1;
+                    ";
+                    $lastInsertedRow = getRows($sql, null)[0];
+                    echo "<br>";
+                    echo "last inserted row";
+                    var_dump($lastInsertedRow);
+                    //set individual id as cookie
+
+                    setcookie("individualVisitId", $lastInsertedRow["individual visit id"]);
+                    // echo "<br>";
+                    // echo "cookie id";
+                    // $value = 'something from somewhere';
+                    // setcookie("TestCookie", $value);
+                    // echo $_COOKIE["TestCookie"];
+                    // echo htmlspecialchars($_COOKIE['individualVisitId']);
+
+
+                    $_SESSION['customer type'] = $lastInsertedRow['customer type'];
+                    $_SESSION['userName'] = $lastInsertedRow['name'];
+                    $_SESSION['member id'] = $lastInsertedRow['member id'];
+                    $_SESSION['individual visit id'] = $lastInsertedRow['individual visit id'];
+                    $_SESSION['logged in'] = $lastInsertedRow['logged in'];
+                    $_SESSION['order status'] = $lastInsertedRow['order status'];
+                    $_SESSION['checked in at'] = $lastInsertedRow['checked in at'];
+                    $_SESSION['table occupancy id'] = $lastInsertedRow['table occupancy id'];
+
+                    echo $_SESSION['userName'];
+                    echo $_SESSION['customer type'];
+                    echo $_SESSION['member id'];
+                    echo $_SESSION['individual visit id'];
+                    echo $_SESSION['logged in'];
+                    echo $_SESSION['order status'];
+                    echo $_SESSION['checked in at'];
+                    echo $_SESSION['table occupancy id'];
+                }
+
+                $mSignInSuccess['signInAttempt'] = 'Sign In Success';
+                header("refresh:3;url=enterTable.php");
+            }
+
+            //if the member is not signed up yet
+            else {
+                //header to sign up page
+                $mSignInErrors['signInAttempt'] = 'Please sign up first or sign in as a guest';
+                // echo $mSignInErrors['signInAttempt'];
+                header("refresh:2;url=signup.php");
+
+            }
         }
     }
 }
+
+
+//OOP way of Member Sign in
+//Member Sign in Controller
+//Form Validation
+// if (isset($_POST["memberSignin"])) {
+//     //get the posted form values and store them in variables
+//     $useremail = trim($_POST['useremail']);
+//     $userpassword = trim($_POST['userpassword']);
+//     echo $useremail;
+//     echo $userpassword;
+//     // $userpassword = password_hash($_POST['userpassword'], PASSWORD_DEFAULT);
+//     //Create a Member Login Controller
+//     $loginContr = new LoginContr($useremail, $userpassword);
+
+//     //if all errorhandlers are validated
+//     if ($loginContr->checkemptyEmail() == false) {
+//         $mSignInErrors['email'] = 'Email should not be blank';
+//         $mSignInErrors['signInAttempt'] = 'Sign in failed';
+//     } else {
+//         if ($loginContr->checkvalidEmail() == false) {
+//             $mSignInErrors['email'] = 'Invalid Email';
+//             $mSignInErrors['signInAttempt'] = 'Sign in failed';
+//         } elseif ($loginContr->checkvalidEmail() == true) {
+//             $mSignInSuccess['email'] = 'Valid Email';
+//             // $mSignInSuccess['signInAttempt'] = 'Sign in Success';
+//         } else {
+//             $mSignInErrors['signInAttempt'] = 'Sign in failed';
+//         }
+//     }
+
+//     //check pwd empty and valid password
+//     if ($loginContr->checkemptyPwd() == false) {
+//         $mSignInErrors['password'] = 'Password should not be blank';
+//         $mSignInErrors['signInAttempt'] = 'Sign in failed';
+//     } else {
+//         //check the hashed password
+//         // if($loginContr->checkPassword())
+//         // {
+
+//         // }
+
+//         $mSignInSuccess['password'] = 'Valid password';
+//     }
+
+//     //check if user already exists in database
+
+//     if ($mSignInErrors['email'] == null && $mSignInErrors['password'] == null) {
+//         if ($loginContr->checkUserMember() == 1) {
+//             // $mSignInSuccess['userNotFound'] = 'User found';
+//             $mSignInSuccess['signInAttempt'] = 'Sign in success';
+//             setName($loginContr->getName());
+//             $_SESSION["userName"] = $loginContr->getName();
+//             // $_SESSION['userName']
+//             // setLoggedIn(true);
+//             $_SESSION["loggedIn"] = true;
+//             header("refresh:1;url=enterTable.php");
+//         } else if ($loginContr->checkUserMember() == 0) {
+//             $mSignInErrors['signInAttempt'] = 'User not found. Please sign up first!';
+//             // $mSignInErrors['signInAttempt'] = 'Sign in failed';
+
+//         } else {
+//             $mSignInErrors['signInAttempt'] = 'Sign in failed';
+//         }
+//     }
+// }
 ?>
 
 <!DOCTYPE html>
@@ -216,6 +394,9 @@ if (isset($_POST["memberSignin"])) {
     <!-- <meta http-equiv="refresh" content="30"> -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- <link rel="stylesheet" href="css/testStyle.css"> -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="css/indexStyle.css">
 
     <script src="index.js"></script>
@@ -312,7 +493,8 @@ if (isset($_POST["memberSignin"])) {
     </style>
 </head>
 
-<body>
+<body onload="console.log('Welcome to my home page!');">
+
 
     <!--View Templates-->
     <!--Guest Check in View Template-->

@@ -38,7 +38,7 @@ class GuestSignInContr extends GuestSignIn
         }
     }
 
-    public function addToIndividualVisits()
+    public function signIn()
     {
         //call insertToGUests from GuestSignIn class
         $this->insertToGuests($this->guestName);

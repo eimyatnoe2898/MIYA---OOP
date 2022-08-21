@@ -4,9 +4,9 @@ include_once "header.php";
 <?php
 session_start();
 // Check if the user is logged in, if not then redirect him to landing page
-if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true)
+if(!isset($_SESSION["logged in"]) || $_SESSION["logged in"] !== true)
     {
-    header("location:/MIYA_NEW/index.html?error=notloggedin");
+    header("location:../index.php?error=notloggedin");
     exit;
     }  
 ?>
@@ -252,7 +252,7 @@ if(!empty($_SESSION["cart"])){
                     ?>
                     <form id = "checkout" method = "post" action = "submitOrders.php">
                         <button type = "submit" name = "submit_orders">Submit Orders in Cart</button>
-                    </form>x
+                    </form>
 
                 
                 <?php  

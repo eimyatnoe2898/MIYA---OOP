@@ -2,17 +2,18 @@
 include 'includes/autoloader.inc.php';
 include 'includes/readTablesMethods.inc.php';
 include 'includes/functions.inc.php';
+include 'includes/formErrorHandlers.inc.php';
 
 //create array for variables 
 //create array for errors 
+session_start();
+
 
 $signUpErrors = array('fname' => null, 'lname' => null, 'email' => null, 'password' => null, 'birthday' => null, 'city' => null, 'state' => null, 'ph number' => null, 'signUpAttempt' => null);
 $signUpSuccess = array('fname' => null, 'lname' => null, 'email' => null, 'password' => null, 'birthday' => null, 'city' => null, 'state' => null, 'ph number' => null, 'signUpAttempt' => null);
-$firstName = $lastName =  $email = $password =  $birthday = $city = $state = $phNumber = "";
-$success = '';
+$firstName = $lastName =  $email = $password =  $birthday = $city = $state = $phNumber = $hashedPassword = "";
 
 if (isset($_POST['signup'])) {
-    session_start();
     $firstName = trim($_POST['fname']);
     $lastName = trim($_POST['lname']);
     $birthday = $_POST['userbirthdate'];
@@ -22,138 +23,135 @@ if (isset($_POST['signup'])) {
     $phNumber = trim($_POST['userphnumber']);
     $city = trim($_POST['usercity']);
     $state = trim($_POST['userstate']);
+    $hashedPassword = password_hash($_POST['userpassword'], PASSWORD_DEFAULT);
+    // $verifyPassword = password_verify($password, $hashedpassword);
 
-    echo "First Name:". $firstName;
+    echo "First Name:" . $firstName;
     echo "<br>";
-    echo "Last Name:". $lastName;
+    echo "Last Name:" . $lastName;
     echo "<br>";
-    echo "Birthday:". $birthday;
+    echo "Birthday:" . $birthday;
     echo "<br>";
-    echo "Email:". $email;
+    echo "Email:" . $email;
     echo "<br>";
-    echo "Password:". $password;
+    echo "Password:" . $password;
     echo "<br>";
-    echo "Phone Number:". $phNumber;
+    echo "Hashed Password:". $hashedPassword;
     echo "<br>";
-    echo "City:". $city;
+    echo "Phone Number:" . $phNumber;
     echo "<br>";
-    echo "State:". $state;
+    echo "City:" . $city;
+    echo "<br>";
+    echo "State:" . $state;
 
-    $signUpContr = new SignUpContr($firstName, $lastName,  $birthday, $email, $password,  $phNumber, $city, $state);
+    // $signUpContr = new SignUpContr($firstName, $lastName,  $birthday, $email, $password,  $phNumber, $city, $state);
 
     //Error Handlers here
     //Check Empty first and valid first name
-    if ($signUpContr->checkEmptyFname() == false) {
-        echo $signUpContr->checkEmptyFname();
+    if (checkEmpty($firstName) == false) {
+        echo checkEmpty($firstName);
         $signUpErrors['fname'] = 'First Name should not be blank';
         echo $signUpErrors['fname'];
     } else {
         // echo $signUpContr->checkvalidFname();
-        if ($signUpContr->checkvalidFname() == false) {
+        if (checkEmpty($firstName) == false) {
             $signUpErrors['fname'] = 'First Name should contain only letters';
-        } else if ($signUpContr->checkvalidFname() == true) {
+        } else if (checkvalidString($firstName) == true) {
             $signUpSuccess['fname'] = 'Valid First Name';
         }
     }
 
     //Check Empty and valid last name
-    if ($signUpContr->checkEmptyLname() == false) {
+    if (checkEmpty($lastName) == false) {
         $signUpErrors['lname'] = 'Last Name should not be blank';
         echo $signUpErrors['lname'];
     } else {
-        if ($signUpContr->checkValidLname() == false) {
+        if (checkvalidString($lastName) == false) {
             $signUpErrors['lname'] = 'Last Name should contain only letters';
             echo $signUpErrors['lname'];
-        } else if ($signUpContr->checkvalidLname() == true) {
+        } else if (checkvalidString($lastName) == true) {
             $signUpSuccess['lname'] = 'Valid Last Name';
         }
     }
 
     //Check Empty and valid email
-    if ($signUpContr->checkEmptyEmail() == false) {
+    if (checkEmpty($email) == false) {
         $signUpErrors['email'] = 'Email should not be blank';
         echo $signUpErrors['email'];
     } else {
-        if ($signUpContr->checkValidEmail() == false) {
+        if (checkEmail($email) == false) {
             $signUpErrors['email'] = 'Invalid Email';
             echo $signUpErrors['email'];
-        }
-        else if ($signUpContr->checkValidEmail() == true) {
+        } else if (checkEmail($email) == true) {
             $signUpSuccess['email'] = 'Valid Email';
             echo $signUpSuccess['email'];
         }
-
     }
 
     //Check Empty and valid Password
-    echo $signUpContr->checkEmptyPwd();
-    echo "password strength" . $signUpContr->checkPwdstrength();
-    if ($signUpContr->checkEmptyPwd() == false) {
+    echo checkEmpty($password);
+    echo "password strength" . checkPwdstrength($password);
+    if (checkEmpty($password) == false) {
         $signUpErrors['password'] = 'Password should not be blank';
         echo $signUpErrors['password'];
     } else {
-        if ($signUpContr->checkPwdstrength() == false) {
+        if (checkEmpty($password) == false) {
             $signUpErrors['password'] = 'Password should be at least 12 characters, contain at least 1 uppercase, 1 lowercase, 1 special character, and 1 number';
             echo $signUpErrors['password'];
-        }
-
-        else if ($signUpContr->checkPwdstrength() == true) {
+        } else if (checkPwdstrength($password) == true) {
             $signUpSuccess['password'] = 'Valid Password';
+            //hash the password
             echo $signUpSuccess['password'];
         }
     }
 
-    if(isset($_POST['userbirthdate']))
-    {
+    if (isset($_POST['userbirthdate'])) {
         $signUpSuccess['birthday'] = 'Valid Birthday';
         echo $signUpSuccess['birthday'];
     }
 
     //Check Valid Phone number
-    if ($signUpContr->checkValidPhno() == false) {
+    if (checkPhone($phNumber) == false) {
         $signUpErrors['ph number'] = 'Phone Number is invalid';
         echo $signUpErrors['ph number'];
-    }
-    else if ($signUpContr->checkValidPhno() == true) {
+    } else if (checkPhone($phNumber) == true) {
         $signUpSuccess['ph number'] = 'Valid Phone Number';
         echo $signUpSuccess['ph number'];
     }
 
     //Check Valid City
-    if ($signUpContr->checkValidCity() == false) {
+    if (checkvalidString($city) == false) {
         $signUpErrors['city'] = 'City name is invalid';
         echo $signUpErrors['city'];
-    }
-    else if ($signUpContr->checkValidCity() == true) {
+    } else if (checkvalidString($city) == true) {
         $signUpSuccess['city'] = 'Valid City';
         echo $signUpSuccess['city'];
     }
 
 
     //Check Valid State - Kind of unnecessary
-    if ($signUpContr->checkValidState() == false) {
+    if (checkvalidString($state) == false) {
         $signUpErrors['state'] = 'State name is invalid';
         echo $signUpErrors['state'];
-    }
-    else if ($signUpContr->checkValidState() == true) {
+    } else if (checkvalidString($state) == true) {
         $signUpSuccess['state'] = 'Valid State';
         echo $signUpSuccess['state'];
     }
 
     //Check All errors to show final success message
-    
+
     echo "<br>";
     $noErrors = true;
     foreach ($signUpErrors as $error) {
         // echo $error;
         if ($error != null) {
             $noErrors = false;
-            echo $error. $noErrors;
+            echo $error . $noErrors;
             echo "<br>";
         }
     }
     echo "<br>";
-    echo 'Is there any errors'.$noErrors;
+    echo 'Is there any errors' . $noErrors;
 
     if ($noErrors == true) {
         $signUpSuccess['signUpAttempt'] = 'Registration successful';
@@ -170,15 +168,66 @@ if (isset($_POST['signup'])) {
     echo "Success";
     print_r($signUpSuccess);
 
-    if($signUpSuccess['signUpAttempt'] != null)
 
-    {
-        $signUpContr->addMember($firstName, $lastName, $birthday, $email, $password, $city, $state, $phNumber);
-        setName($firstName);
-        setLoggedIn(true);
-        header( "refresh:1;url=enterTable.php");
+    if ($signUpSuccess['signUpAttempt'] != null && $signUpErrors['signUpAttempt'] == null) {
+        //check if the user is already signed up
+        //if yes
+        $sql = "SELECT * FROM `members` WHERE `email` = ?";
+        $result = executeSql($sql, array($email));
+        echo $hashedPassword;
+        // echo $memberName;
+        //if the member is signed up - yes
+        if (count($result) == 0) {
+            //if no
+            $sql = "INSERT INTO `members`(`first name`, `last name`, `email`, `password`,`birthday`, `city`, `state`, `phone number`  )  values (?,?,?,?,?,?,?,?)";
+            //insert into table
+            insertSql($sql, array($firstName, $lastName, $email, $hashedPassword, $birthday, $city, $state, $phNumber));
+            $sql = "SELECT * FROM `members` ORDER BY `id` DESC LIMIT 1";
+            $lastInsertedMember = getRows($sql, null)[0];
+            echo "<br>";
+            echo "last inserted member";
+            var_dump($lastInsertedMember);
+            $memberId = $lastInsertedMember['id'];
+            //insert into individual visit
+            $sql = "INSERT INTO `individual visits`(`member id`, `name`, `logged in`) VALUES (?,?,?)";
+            insertSql($sql, array($memberId, $firstName, true));
+            $sql = "SELECT * FROM `individual visits` ORDER BY `individual visit id` DESC LIMIT 1;
+            // ";
+            $lastInsertedVisit = getRows($sql, null)[0];
+            echo "<br>";
+            echo "last inserted visit";
+            var_dump($lastInsertedVisit);
+
+            //set individual id as cookie
+            setcookie("individualVisitId", $lastInsertedVisit["individual visit id"]);
+
+            // store in session variables
+            $_SESSION['customer type'] = $lastInsertedVisit['customer type'];
+            $_SESSION['userName'] = $lastInsertedVisit['name'];
+            $_SESSION['member id'] = $lastInsertedVisit['member id'];
+            $_SESSION['individual visit id'] = $lastInsertedVisit['individual visit id'];
+            $_SESSION['logged in'] = $lastInsertedVisit['logged in'];
+            $_SESSION['order status'] = $lastInsertedVisit['order status'];
+            $_SESSION['checked in at'] = $lastInsertedVisit['checked in at'];
+
+            echo $_SESSION['userName'];
+            echo $_SESSION['customer type'];
+            echo $_SESSION['member id'];
+            echo $_SESSION['individual visit id'];
+            echo $_SESSION['logged in'];
+            echo $_SESSION['order status'];
+            echo $_SESSION['checked in at'];
+
+
+            //redirect to enterTable.php
+            $signUpSuccess['signUpAttempt'] = "Sign Up Success. Signing you in...";
+            // header("refresh:1;url=enterTable.php");
+        } else {
+
+            $signUpErrors['signUpAttempt'] = 'Username already exists. Please sign in.';
+            header("refresh:3;url=index.php");
+        }
     }
-
 }
 ?>
 
@@ -223,10 +272,10 @@ if (isset($_POST['signup'])) {
 
         <?php
         } else if (($signUpSuccess['lname'] != null)) {
-            ?>.userlname-success {
-                display: block;
-                border-color: green;
-            }
+        ?>.userlname-success {
+            display: block;
+            border-color: green;
+        }
 
         <?php
         }
@@ -236,12 +285,13 @@ if (isset($_POST['signup'])) {
         ?>.useremail-error {
             display: block;
         }
+
         <?php
         } else if (($signUpSuccess['email'] != null)) {
-            ?>.useremail-success {
-                display: block;
-                border-color: green;
-            }
+        ?>.useremail-success {
+            display: block;
+            border-color: green;
+        }
 
         <?php
         }
@@ -251,22 +301,24 @@ if (isset($_POST['signup'])) {
         ?>.userpassword-error {
             display: block;
         }
+
         <?php
         } else if (($signUpSuccess['password'] != null)) {
-            ?>.userpassword-success {
-                display: block;
-                border-color: green;
-            }
+        ?>.userpassword-success {
+            display: block;
+            border-color: green;
+        }
+
         <?php
         }
 
         //To show birthday error message
         if ($signUpSuccess['birthday'] != null) {
-            ?>.userbirthday-success {
-                display: block;
-            }
+        ?>.userbirthday-success {
+            display: block;
+        }
 
-            <?php
+        <?php
         }
 
         //To show ph number error message
@@ -274,40 +326,46 @@ if (isset($_POST['signup'])) {
         ?>.userphNumber-error {
             display: block;
         }
+
         <?php
         } else if (($signUpSuccess['password'] != null)) {
-            ?>.userpassword-success {
-                display: block;
-                border-color: green;
-            }
+        ?>.userpassword-success {
+            display: block;
+            border-color: green;
+        }
+
         <?php
         }
-        
+
         //To show city error message
         if ($signUpErrors['city'] != null) {
         ?>.usercity-error {
             display: block;
         }
+
         <?php
         } else if (($signUpSuccess['city'] != null)) {
-            ?>.usercity-success {
-                display: block;
-                border-color: green;
-            }
+        ?>.usercity-success {
+            display: block;
+            border-color: green;
+        }
+
         <?php
         }
-        
+
         //To show state error message
         if ($signUpErrors['state'] != null) {
         ?>.userstate-error {
             display: block;
         }
+
         <?php
         } else if (($signUpSuccess['state'] != null)) {
-            ?>.userstate-success {
-                display: block;
-                border-color: green;
-            }
+        ?>.userstate-success {
+            display: block;
+            border-color: green;
+        }
+
         <?php
         }
 
@@ -315,13 +373,15 @@ if (isset($_POST['signup'])) {
         ?>.memberSignUp-error {
             display: block;
         }
+
         <?php
         } else if (($signUpSuccess['signUpAttempt'] != null)) {
-            ?>.memberSignUp-success {
-                display: block;
-                border-color: green;
-            }         
-                /* .userstate-success {
+        ?>.memberSignUp-success {
+            display: block;
+            border-color: green;
+        }
+
+        /* .userstate-success {
                     display: block;
                     border-color: green;
                 } */
@@ -394,7 +454,7 @@ if (isset($_POST['signup'])) {
                         ?>
                     </select>
                     <p class="error userstate-error"><?php echo $signUpErrors['state'] ?></p>
-                    <p class="success userstate-success"><?php echo $signUpErrors['state']?></p>
+                    <p class="success userstate-success"><?php echo $signUpErrors['state'] ?></p>
                     <br>
                     <button type="submit" class="check-inbtn" name="signup">Create Account</button>
                     <p class="success memberSignUp-success"><?php echo $signUpSuccess['signUpAttempt'] ?></p>
@@ -407,21 +467,5 @@ if (isset($_POST['signup'])) {
 
     </div>
 
-    <?php
-
-    //Create a signupController object
-
-
-    //Do form validation by calling error handling\
-
-    //For each error handlers 
-    //false or true
-    //false
-    //create DOM element saying this error handler is not validated
-
-
-    //true - for the final all error handlers validated
-    //create DOM 
-    ?>
 </body>
 </head>

@@ -5,9 +5,11 @@
 // include 'includes/sessionMethods.inc.php';
 // include 'includes/readTablesMethods.inc.php';
 
-include 'C:\xampp\htdocs\MIYA - OOP\includes\readTablesMethods.inc.php';
-
 session_start();
+require_once 'notifications.php';
+
+include_once 'C:\xampp\htdocs\MIYA - OOP\includes\readTablesMethods.inc.php';
+
 
 ?>
 

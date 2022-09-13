@@ -96,4 +96,26 @@ function checkPhone($phNumber)
     return $result;
 }
 
+function checkPwdstrength($password)
+{
+    $uppercase = preg_match('@[A-Z]@', $password);
+    $lowercase = preg_match('@[a-z]@', $password);
+    $number    = preg_match('@[0-9]@', $password);
+    $specialChars = preg_match('@[^\w]@', $password);
+
+    if(!$uppercase || !$lowercase || !$number || !$specialChars || strlen($password) < 12) 
+    {
+        // header("location:/MIYA_NEW/signup.html?error=weakpassword");
+        // exit("Passwords must have at least 12 characters");
+        $result = false;
+    }
+
+    else
+    {
+        $result = true;
+    }
+
+    return $result;
+
+}
 

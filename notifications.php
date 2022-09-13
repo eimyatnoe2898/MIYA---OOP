@@ -34,6 +34,18 @@ include 'includes/readTablesMethods.inc.php';
                 })
             }
 
+            function fetchUnreadNotifications()
+            {
+                $.ajax({
+                    url: "fetchUnreadNotifications.php",
+                    method : "POST",
+                    success: function(data)
+                    {
+                        $("#unreadNotification").html(data);
+                    }
+                })
+            }
+
             setInterval(function()
             {
                 fetchUnreadNotifications()
@@ -42,6 +54,8 @@ include 'includes/readTablesMethods.inc.php';
 
             $("#navbarDropdownMenuLink").on("click", function() {
                 $.ajax({
+                    //show all the Notifications
+                        //the first one will be highlighted
                     url: "readNotifications.php",
                     success: function() {
                         console.log('Update Success');
@@ -49,18 +63,10 @@ include 'includes/readTablesMethods.inc.php';
                 });
             });
 
+
             
 
         });
-
-
-
-                    // setInterval(function() {
-                    //     fetchUsers()
-                    // }, 1000)
-
-                    //another function to update notifications amount
-                    //set interval to 5000 milliseconds
     </script>
 </head>
 
@@ -93,6 +99,7 @@ include 'includes/readTablesMethods.inc.php';
                         Notifications (<span id="unreadNotification"></span>)
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        
                         <?php
                         $sql = "SELECT * FROM notifications ORDER BY `notification id` DESC";
                         $rows = getRows($sql, array());

@@ -111,11 +111,15 @@ function executeSql($sqlStmt, $bindValues)
 
 function updateSql($sqlStmt, $bindValues)
 {
+    $resultArr = $bindValues;
     $result = "";
     try {
+
+        // $stmt= $pdo->prepare($sql);
+        // $stmt->execute([$name, $surname, $sex, $id]);
         $stmt = connectDb()->prepare($sqlStmt);
-        $stmt->execute($bindValues);
-        $result = true;
+        $stmt->execute($resultArr);
+        $result = $stmt->rowCount();
         return $result;
     } catch (PDOException $e) {
         echo $sqlStmt . $e->getMessage();

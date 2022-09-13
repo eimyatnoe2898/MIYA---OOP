@@ -39,7 +39,7 @@ if (isset($_POST["guestSignin"])) {
             $gSignInErrors['signInAttempt'] = 'Check in Failed';
         } elseif (checkvalidString($guestName) == true) {
             $gSignInSuccess['name'] = 'Valid Guest Name';
-            $gSignInSuccess['signInAttempt'] = 'Check in Success';
+            $gSignInSuccess['signInAttempt'] = 'Form Errors Validated';
 
             //is the customer recently signed in?
             //if it is yes
@@ -76,7 +76,6 @@ if (isset($_POST["guestSignin"])) {
                         $tableOccupancyRecord = $result2[0];
                         $_SESSION['table number'] = $tableOccupancyRecord['table number'];
                     }
-
 
                     // //retrieve service request list
 
@@ -118,7 +117,8 @@ if (isset($_POST["guestSignin"])) {
 
                     // $_SESSION['checked in at'] = $foundCustomer['checked in at'];
                     // $_SESSION['checked out at'] = $foundCustomer['checked out at'];
-                    // header("refresh:1;url=enterTable.php");
+                    $gSignInSuccess['signInAttempt'] = 'Sigining you in...';
+                    header("refresh:3;url=enterTable.php");
                 }
 
                 //check if this customer was signed in within last 10 minutes
@@ -143,7 +143,7 @@ if (isset($_POST["guestSignin"])) {
 
                 //set individual id as cookie
                 setcookie("individualVisitId", $lastInsertedRow['individual visit id']);
-                echo $_COOKIE["individualVisitId"];
+                // echo $_COOKIE["individualVisitId"];
 
                 $_SESSION['customer type'] = $lastInsertedRow['customer type'];
                 $_SESSION['userName'] = $lastInsertedRow['name'];
@@ -162,9 +162,12 @@ if (isset($_POST["guestSignin"])) {
                 echo $_SESSION['order status'];
                 echo $_SESSION['checked in at'];
                 echo $_SESSION['table occupancy id'];
+
+                $gSignInSuccess['signInAttempt'] = 'Sigining you in...';
+                header("refresh:3;url=enterTable.php");
             }
         } else {
-            $gSignInSuccess['signInAttempt'] = 'Check in Failed';
+            $gSignInErrors['signInAttempt'] = 'Check in Failed';
         }
     }
 }
@@ -176,9 +179,8 @@ if (isset($_POST["memberSignin"])) {
     $userpassword = trim($_POST['userpassword']);
     echo $useremail;
     echo $userpassword;
-    // $userpassword = password_hash($_POST['userpassword'], PASSWORD_DEFAULT);
-    //Create a Member Login Controller
-    // $loginContr = new LoginContr($useremail, $userpassword);
+    $hashedPassword = password_hash($_POST['userpassword'], PASSWORD_DEFAULT);
+
 
     //check error handlers
     if (checkEmpty($useremail) == false) {
@@ -192,35 +194,34 @@ if (isset($_POST["memberSignin"])) {
             $mSignInSuccess['email'] = 'Valid Email';
             // $mSignInSuccess['signInAttempt'] = 'Sign in Success';
         }
+    }
 
-        //check pwd empty and valid password
-        if (checkEmpty($userpassword) == false) {
-            $mSignInErrors['password'] = 'Password should not be blank';
-            $mSignInErrors['signInAttempt'] = 'Sign in failed';
-        } else {
-            //check the hashed password
-            $mSignInSuccess['password'] = 'Valid password';
-        }
+    //check pwd empty and valid password
+    if (checkEmpty($userpassword) == false) {
+        $mSignInErrors['password'] = 'Password should not be blank';
+        $mSignInErrors['signInAttempt'] = 'Sign in failed';
+    } else {
+        //check the hashed password
+        $mSignInSuccess['password'] = 'Valid password';
+    }
 
 
-        // if ($mSignInErrors['email'] != null && $mSignInErrors['password'] != null) {
-        //     $mSignInErrors['signInAttempt'] = 'Sign in failed';
-        if ($mSignInSuccess['email'] != null && $mSignInSuccess['password'] != null) {
-            //check if the member is already signed up
-            $sql = "SELECT * FROM `members` WHERE `email` = ? and `password` = ?";
-            $result2 = executeSql($sql, array($useremail, $userpassword));
-            // echo $memberName;
-            //if the member is signed up - yes
-            if (count($result2) == 1) {
+    if ($mSignInSuccess['email'] != null && $mSignInSuccess['password'] != null) {
+        //check if the member is already signed up
+        $sql = "SELECT * FROM `members` WHERE `email` = ?";
+        $result2 = executeSql($sql, array($useremail));
+        $hashedPassword = $result2[0]['password'];
+        // echo $memberName;
+        //if the member is signed up - yes
+        if (count($result2) == 1) {
+            //verify password
+            //if verified
+            if (password_verify($userpassword, $hashedPassword)) {
                 //check the cookie
                 //if there is a set cookie
                 $memberId = $result2[0]['id'];
                 $memberName = $result2[0]['first name'];
                 if (isset($_COOKIE["individualVisitId"])) {
-
-                    // echo "Printing cookie id";
-                    // echo $_COOKIE['individualVisitId'];
-                    // print_r($_COOKIE);
                     //retrieve all information from individual visit
                     echo "<br>";
                     echo "if cookie is set, ";
@@ -304,82 +305,25 @@ if (isset($_POST["memberSignin"])) {
             }
 
             //if the member is not signed up yet
-            else {
-                //header to sign up page
-                $mSignInErrors['signInAttempt'] = 'Please sign up first or sign in as a guest';
-                // echo $mSignInErrors['signInAttempt'];
-                header("refresh:2;url=signup.php");
-
+            else if (!password_verify($userpassword, $hashedPassword)) {
+                $mSignInErrors['email'] = "Wrong Password or email";
+                $mSignInErrors['password'] = "Wrong Password or email";
+                $mSignInErrors['signInAttempt'] = "Sign in failed";
+                // header("refresh:2;url=signup.php");
             }
+
+            //if not verified
+
+
+        } else {
+            //header to sign up page
+            $mSignInErrors['signInAttempt'] = 'User not found. Sign up first';
+            // echo $mSignInErrors['signInAttempt'];
+            header("refresh:2;url=signup.php");
         }
     }
 }
 
-
-//OOP way of Member Sign in
-//Member Sign in Controller
-//Form Validation
-// if (isset($_POST["memberSignin"])) {
-//     //get the posted form values and store them in variables
-//     $useremail = trim($_POST['useremail']);
-//     $userpassword = trim($_POST['userpassword']);
-//     echo $useremail;
-//     echo $userpassword;
-//     // $userpassword = password_hash($_POST['userpassword'], PASSWORD_DEFAULT);
-//     //Create a Member Login Controller
-//     $loginContr = new LoginContr($useremail, $userpassword);
-
-//     //if all errorhandlers are validated
-//     if ($loginContr->checkemptyEmail() == false) {
-//         $mSignInErrors['email'] = 'Email should not be blank';
-//         $mSignInErrors['signInAttempt'] = 'Sign in failed';
-//     } else {
-//         if ($loginContr->checkvalidEmail() == false) {
-//             $mSignInErrors['email'] = 'Invalid Email';
-//             $mSignInErrors['signInAttempt'] = 'Sign in failed';
-//         } elseif ($loginContr->checkvalidEmail() == true) {
-//             $mSignInSuccess['email'] = 'Valid Email';
-//             // $mSignInSuccess['signInAttempt'] = 'Sign in Success';
-//         } else {
-//             $mSignInErrors['signInAttempt'] = 'Sign in failed';
-//         }
-//     }
-
-//     //check pwd empty and valid password
-//     if ($loginContr->checkemptyPwd() == false) {
-//         $mSignInErrors['password'] = 'Password should not be blank';
-//         $mSignInErrors['signInAttempt'] = 'Sign in failed';
-//     } else {
-//         //check the hashed password
-//         // if($loginContr->checkPassword())
-//         // {
-
-//         // }
-
-//         $mSignInSuccess['password'] = 'Valid password';
-//     }
-
-//     //check if user already exists in database
-
-//     if ($mSignInErrors['email'] == null && $mSignInErrors['password'] == null) {
-//         if ($loginContr->checkUserMember() == 1) {
-//             // $mSignInSuccess['userNotFound'] = 'User found';
-//             $mSignInSuccess['signInAttempt'] = 'Sign in success';
-//             setName($loginContr->getName());
-//             $_SESSION["userName"] = $loginContr->getName();
-//             // $_SESSION['userName']
-//             // setLoggedIn(true);
-//             $_SESSION["loggedIn"] = true;
-//             header("refresh:1;url=enterTable.php");
-//         } else if ($loginContr->checkUserMember() == 0) {
-//             $mSignInErrors['signInAttempt'] = 'User not found. Please sign up first!';
-//             // $mSignInErrors['signInAttempt'] = 'Sign in failed';
-
-//         } else {
-//             $mSignInErrors['signInAttempt'] = 'Sign in failed';
-//         }
-//     }
-// }
 ?>
 
 <!DOCTYPE html>

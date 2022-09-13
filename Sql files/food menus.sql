@@ -91,7 +91,7 @@ INSERT INTO `food menus` (`menubook id`, `meal`, `main category`, `name`, `price
 ('22', 'Lunch', 'Hibachi', 'New York Steak Hibachi', 12.20, 30)
 ;
 
-INSERT INTO `food menus` (`menubook id`, `meal`, `main category`, `name`, `raw meat?`, `price`, `notes`, `preparation time(mins)`) values 
+INSERT INTO `food menus` (`menubook id`, `meal`, `main category`, `name`, `raw meat`, `price`, `notes`, `preparation time(mins)`) values 
 ('28', 'Lunch/Dinner', 'Sushi & Sashimi A La Carte', 'Tuna', 1, 5.75, 'Maguro', 30),
 ('31', 'Lunch/Dinner', 'Sushi & Sashimi A La Carte', 'Eel', 0, 5.75, 'Unagi', 30),
 ('32', 'Lunch/Dinner', 'Sushi & Sashimi A La Carte', 'Shrimp', 0, 5.75, 'Ebi', 30),
@@ -102,13 +102,13 @@ INSERT INTO `food menus` (`menubook id`, `meal`, `main category`, `name`, `raw m
 ('38', 'Lunch/Dinner', 'Sushi & Sashimi A La Carte', 'Red Snapper', 1, 5.25, 'Tai', 30)
 ;
 
-INSERT INTO `food menus` (`menubook id`, `meal`, `main category`, `name`, `raw meat?`, `price`, `preparation time(mins)`) values 
+INSERT INTO `food menus` (`menubook id`, `meal`, `main category`, `name`, `raw meat`, `price`, `preparation time(mins)`) values 
 ('29', 'Lunch/Dinner', 'Sushi & Sashimi A La Carte', 'White Tuna', 1, 5.75, 30),
 ('30', 'Lunch/Dinner', 'Sushi & Sashimi A La Carte', 'Smoked Salmon', 0, 6.00, 30),
 ('34', 'Lunch/Dinner', 'Sushi & Sashimi A La Carte', 'Flying Fish Egg', 1, 5.25,  30)
 ;
 
-INSERT INTO `food menus` (`menubook id`, `meal`, `main category`, `name`, `raw meat?`, `price`, `preparation time(mins)`) values 
+INSERT INTO `food menus` (`menubook id`, `meal`, `main category`, `name`, `raw meat`, `price`, `preparation time(mins)`) values 
 ('39', 'Lunch/Dinner', 'Sushi Rolls', 'Avocado Maki', 0, 4.75, 30),
 ('41', 'Lunch/Dinner', 'Sushi Rolls', 'Tuna Maki', 1, 5.25, 30),
 ('42', 'Lunch/Dinner', 'Sushi Rolls', 'Salmon Maki', 1, 5.25, 30),
@@ -119,7 +119,7 @@ INSERT INTO `food menus` (`menubook id`, `meal`, `main category`, `name`, `raw m
 ('51', 'Lunch/Dinner', 'Sushi Rolls', 'Spicy Snow Crab Roll', 0, 6.25, 30)
 ;
 
-INSERT INTO `food menus` (`menubook id`, `meal`, `main category`, `name`, `raw meat?`, `price`, `notes`, `preparation time(mins)`) values 
+INSERT INTO `food menus` (`menubook id`, `meal`, `main category`, `name`, `raw meat`, `price`, `notes`, `preparation time(mins)`) values 
 ('40', 'Lunch/Dinner', 'Sushi Rolls', 'Kapa Maki', 0, 4.75, 'Cucumber', 30),
 ('44', 'Lunch/Dinner', 'Sushi Rolls', 'California Roll', 0, 5.25, 'Imitation crab, cucumber, and cream cheese', 30),
 ('45', 'Lunch/Dinner', 'Sushi Rolls', 'Philadelphia Roll', 0, 6.25, 'Smoked salmon, cucumber, and cream cheese', 30),
@@ -139,7 +139,7 @@ INSERT INTO `food menus` (`menubook id`, `meal`, `main category`, `name`, `price
 ('57', 'Lunch/Dinner', 'Kids Menu', 'Steak Junior', 12.20, 30)
 ;
 
-INSERT INTO `food menus` (`menubook id`, `meal`, `main category`, `name`, `raw meat?`, `price`, `notes`, `preparation time(mins)`) values 
+INSERT INTO `food menus` (`menubook id`, `meal`, `main category`, `name`, `raw meat`, `price`, `notes`, `preparation time(mins)`) values 
 ('58', 'Lunch/Dinner', 'Specialty Rolls', 'Volcano Roll', 1, 15.70, 'Fried spicy tuna and cream cheese topped with 
 spicy imitation snow crab, eel sauce, and spicy mayo', 30),
 ('59', 'Lunch/Dinner', 'Specialty Rolls', 'Mi Ya Roll', 1, 14.70, 'Fried jalapeno stuffed with spicy tuna, cream cheese,
@@ -177,7 +177,7 @@ DROP PRIMARY KEY;
 ALTER TABLE `food menus`
 ADD PRIMARY KEY (`menubook id`, `meal`, `name`, `price`);
 
-INSERT INTO `food menus` (`menubook id`, `meal`, `main category`, `sub category`, `name`, `raw meat?`, `price`, `preparation time(mins)`) values 
+INSERT INTO `food menus` (`menubook id`, `meal`, `main category`, `sub category`, `name`, `raw meat`, `price`, `preparation time(mins)`) values 
 ('73', 'Lunch', 'Sushi Rolls', 'Any Two Rolls', 'Avocado Roll', 0, 4.60, 20),
 ('74', 'Lunch', 'Sushi Rolls', 'Any Two Rolls', 'California Roll', 0, 4.60, 20),
 ('75', 'Lunch', 'Sushi Rolls', 'Any Two Rolls', 'Tuna Roll', 1, 4.60, 20),
@@ -195,7 +195,7 @@ INSERT INTO `food menus` (`menubook id`, `meal`, `main category`, `sub category`
 ('87', 'Lunch', 'Sushi Rolls', 'Any Two Rolls', 'Eel Cucumber Roll', 0, 4.60, 20)
 ;
 
-INSERT INTO `food menus` (`menubook id`, `meal`, `main category`, `sub category`, `name`, `raw meat?`, `price`, `preparation time(mins)`) values 
+INSERT INTO `food menus` (`menubook id`, `meal`, `main category`, `sub category`, `name`, `raw meat`, `price`, `preparation time(mins)`) values 
 ('73', 'Lunch', 'Sushi Rolls', 'Any Three Rolls', 'Avocado Roll', 0, 4.07, 20),
 ('74', 'Lunch', 'Sushi Rolls', 'Any Three Rolls', 'California Roll', 0, 4.07, 20),
 ('75', 'Lunch', 'Sushi Rolls', 'Any Three Rolls', 'Tuna Roll', 1, 4.07, 20),

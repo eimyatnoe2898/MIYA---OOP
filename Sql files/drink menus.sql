@@ -94,6 +94,7 @@ INSERT INTO `drink flavors/types` values
     ('Fountain Soda', 'Lemonade'),
     ('Fountain Soda', 'Iced Tea');
 
+select * from `drink menus`;
 
 DROP TABLE IF EXISTS `drink sizes`;
 CREATE TABLE `drink sizes`

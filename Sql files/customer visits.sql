@@ -6,12 +6,23 @@ CREATE TABLE `individual visits`
 	`individual visit id` int auto_increment,
     `member id` int default NULL,  
 	`name` varchar(50) NOT NULL,
+--     `order status`  set(
+-- 			'waiting for food',
+--             'waiting for checkout',
+--             'browsing menu',
+-- 			'dining')
+-- --             should add 
+-- 	default 'browsing menu',
     `order status`  set(
-			'waiting for food',
-            'waiting for checkout',
-            'browsing menu',
-			'dining') 
-	default 'browsing menu',
+			'ordered/waiting',
+            'not ordered/browsing',
+            'food served',
+            'checked out')
+	default 'not ordered/browsing',
+    `verify status` set(
+			'verified',
+			'not verified')
+	default 'not verified',
     `customer type`  enum(
 			'master',
             'customer') 
@@ -36,22 +47,7 @@ values (8, 'Ei','browsing menu', 'master', 1);
 INSERT INTO `individual visits`(`name`, `logged in`) VALUES ('Ei', true);
 
 select * from `individual visits`;
-
+UPDATE `individual visits`
+SET `order status` = 'browsing menu';
 select `individual visit id` from `individual visits` ORDER BY `individual visit id` DESC LIMIT 1;
-DROP TABLE if exists `sub customers`;
-CREATE TABLE `sub customers` 
-(
-	`individual visit id` int NOT NULL,
-    `sub customer name` varchar(50) NOT NULL,
-    PRIMARY KEY (`individual visit id`, `sub customer name`),
-	FOREIGN KEY(`individual visit id`) references `individual visits`(`individual visit id`) on delete cascade,
-	FOREIGN KEY(`individual visit id`) references `individual visits`(`individual visit id`) on update cascade
-);	
-
-
-CREATE TABLE `test`
-(
-	`name` varchar(50) NOT NULL,
-    `logged in?` boolean not null
-);
 

@@ -64,6 +64,7 @@ function printLoggedIn()
     echo $_SESSION["loggedIn"];
 
 }
+
 //Getters for SessionVariables
 
 //all session methods and cookie methods will be here

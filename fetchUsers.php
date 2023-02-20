@@ -1,11 +1,15 @@
 <?php
-    require "includes/config.php";
+
+include 'includes/readTablesMethods.inc.php';
+
     session_start();
 
-    $customer_type = $_SESSION['customer_type'];
-    $table_occupancy_id = $_SESSION['table_occupancy_id'];
-    $user_array = "";
-    if($customer_type == 'master')
+    $_SESSION["all customers"] = array();
+    $customerType = $_SESSION['customer type'];
+    $table_occupancy_id = $_SESSION['table occupancy id'];
+    $allCustomers = "";
+
+    if($customerType == 'master')
     {
 
     $output = '<table>
@@ -13,31 +17,41 @@
                     <td>Name</td>
                     <td>Message</td>
                 </tr>';
-    $stmt = "SELECT * from individual_visits WHERE table_occupancy_id = '$table_occupancy_id'";
-    $result = mysqli_query($conn, $stmt);
+    $sql1 = "SELECT * from `individual visits` WHERE `table occupancy id` = ?";
+    // $result = executeSql($sql1, array($table_occupancy_id));
+    $rows = getRows($sql1, array($table_occupancy_id));
     
-    if(mysqli_num_rows($result) >0)
+    if(count($rows)>0)
     {
-        echo "Customer List at Table " . $_SESSION['tablenumber'];
+        // $output .= "<table border='10'id='cart'>
+        // <tr>
 
-        $count = 0;
-        while($row = mysqli_fetch_assoc($result))
-        {
-            $user_info = array(
-                "individual_visit_id" => $row['individual_visit_id'],
-                "username" => $row['c_name']);
+        //     <th>ID</th>
+        //     <th>Name</th>
+        //     <th>Size</th>
+        //     <th>Price</th>
+        //     <th>amount</th>
+        //     <th>Total</th>
+        //     <th>Notes</th>
+        //     <th>To Go</th>
+        //     <th>Review</th>
 
-            $output .= '<tr>
-                <td>'.$row['individual_visit_id'].'</td>
-                <td>'.$row['c_name'].'</td>
-            </tr>';
-            
-            $_SESSION["users_list"][$count] = $user_info;
-            $count++;
-        }
+        // </tr>";
 
-        $output .= '</table>';
-        echo $output;
+        // $output .= 
+
+        // echo "Customer List at Table " . $_SESSION['table number'];
+
+        // foreach ($rows as $customerInfo) {
+        //     $customer = array("individual visit id" => $customerInfo["individual visit id"], "name" => $customerInfo["name"]);
+        //     $output .= '<tr>
+        //     <td>'.$customer['individual visit id'].'</td>
+        //     <td>'.$customer['name'].'</td>
+        // </tr>';
+        // array_push($_SESSION["all customers"], $customer);
+        // }
+        // $output .= '</table>';
+        // echo $output;
 
     }
 
@@ -46,14 +60,6 @@
         echo "No other users found";
     }
 
-    echo "These are session variables";
-    foreach($_SESSION["users_list"] as $items => $users){
-        echo "<br>";
-        echo $users["individual_visit_id"]. " ";
-        echo $users["username"];
-        echo "<br>";
-    }
-    }
-
+}
 
 ?>

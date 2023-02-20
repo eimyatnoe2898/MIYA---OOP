@@ -1,8 +1,6 @@
 <?php
 include 'includes/readTablesMethods.inc.php';
 
-//    <!--Through jquery, on click update the status to 1 read-->
-
 ?>
 
 
@@ -22,7 +20,7 @@ include 'includes/readTablesMethods.inc.php';
     <script>
         $(document).ready(function() {
 
-            function fetchUnreadNotifications()
+            function fetchUnreadNotificationsCount()
             {
                 $.ajax({
                     url: "fetchUnreadNotifications.php",
@@ -30,27 +28,35 @@ include 'includes/readTablesMethods.inc.php';
                     success: function(data)
                     {
                         $("#unreadNotification").html(data);
+                        console.log('Return count of unread notifications');
                     }
                 })
             }
 
-            function fetchUnreadNotifications()
+            function fetchNotifications()
             {
                 $.ajax({
-                    url: "fetchUnreadNotifications.php",
+                    url: "fetchNotifications.php",
                     method : "POST",
                     success: function(data)
                     {
-                        $("#unreadNotification").html(data);
+                        $("#allNotifications").html(data);
+                        console.log('Return all notifications');
                     }
                 })
             }
+
+
 
             setInterval(function()
             {
-                fetchUnreadNotifications()
+                fetchUnreadNotificationsCount()
             }, 1000);
 
+            setInterval(function()
+            {
+                fetchNotifications()
+            }, 1000);
 
             $("#navbarDropdownMenuLink").on("click", function() {
                 $.ajax({
@@ -62,9 +68,6 @@ include 'includes/readTablesMethods.inc.php';
                     }
                 });
             });
-
-
-            
 
         });
     </script>
@@ -88,6 +91,9 @@ include 'includes/readTablesMethods.inc.php';
                 <li class="nav-item">
                     <a class="nav-link" href="#">Check Cart</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Add Friends</a>
+                </li>
                 <li class="nav-item dropdown">
                     <?php
 
@@ -98,19 +104,8 @@ include 'includes/readTablesMethods.inc.php';
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Notifications (<span id="unreadNotification"></span>)
                     </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" id = "allNotifications">
                         
-                        <?php
-                        $sql = "SELECT * FROM notifications ORDER BY `notification id` DESC";
-                        $rows = getRows($sql, array());
-                        foreach ($rows as $notification) {
-                        ?>
-                            <a class="dropdown-item" href="#"><?php echo $notification['content'] ?></a>
-                            <div class="dropdown-divider"></div>
-                        <?php
-
-                        }
-                        ?>
                         <!-- <a class="dropdown-item" href="#">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt deserunt tenetur aut aspernatur ab inventore deleniti nemo error libero eligendi!</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="#">Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit voluptatum a id laudantium itaque dignissimos. Ea atque dolorum culpa reiciendis?</a>

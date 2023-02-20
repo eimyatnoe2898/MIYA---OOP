@@ -259,13 +259,9 @@ if(!empty($_SESSION["cart"])){
                 }
             ?>
 
-
-
     <!--for other user's orders-->
     <div id="userorders"></div>
         <?php
-
-
 
     ?>
 </body>

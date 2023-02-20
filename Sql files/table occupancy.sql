@@ -23,4 +23,6 @@ SET `occupancy status` = 'checked in'
 WHERE `table number` = 2;
 INSERT INTO `table occupancy` (`table number`, `occupancy status`, `checked out at`) VALUES (10, 'checked in', '2022-07-11 23:44:59');
 select * from `table occupancy`;
-
+UPDATE `table occupancy`
+SET `occupancy status` = 'checked out';
+delete from `table occupancy`;

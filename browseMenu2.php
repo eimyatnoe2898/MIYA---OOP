@@ -1,16 +1,37 @@
 <?php
 
-// include 'includes/autoloader.inc.php';
-// // include 'MIYA-OOP/includes/functions.inc.php';
-// include 'includes/sessionMethods.inc.php';
-// include 'includes/readTablesMethods.inc.php';
-
 session_start();
-require_once 'notifications.php';
-
-include_once 'C:\xampp\htdocs\MIYA - OOP\includes\readTablesMethods.inc.php';
+include_once 'includes/readTablesMethods.inc.php';
 
 
+// Check if the user is logged in, if not then redirect him to landing paget
+if (!isset($_SESSION['logged in']) || $_SESSION['logged in'] != true) {
+    header("location:../index.php?error=notloggedIn");
+    exit;
+}
+
+if(isset($_POST['callForService']))
+{
+    //add to service calls
+    $serviceRequested = trim($_POST['serviceType']);
+    if($serviceRequested != '')
+    {
+    $sql1 = "INSERT INTO `service request records`(`individual visit id`, `service requested`, `table occupancy id`) VALUES(?,?,?)";
+    $resul1 = insertSql($sql1, array($_SESSION['individual visit id'], $serviceRequested, $_SESSION['table occupancy id'] ));
+
+    //add to notifications
+    $content = $_SESSION['userName']. ' from table'. $_SESSION['table number']. ' requested for '. $serviceRequested;
+   $sql2 = "INSERT INTO `notifications`(`for`, `category`, `table occupancy id`,`individual visit id`, `content`) VALUES(?,?,?,?, ?)";
+    $result2 = insertSql($sql2, array('admin', 'service request', $_SESSION['table occupancy id'],  $_SESSION['individual visit id'], $content));
+
+    //alert
+    echo '<script>alert("Hello! I am an alert box!!");
+    </script>';
+    }
+
+    
+
+}
 ?>
 
 <!DOCTYPE html>
@@ -25,18 +46,98 @@ include_once 'C:\xampp\htdocs\MIYA - OOP\includes\readTablesMethods.inc.php';
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
     <link rel="stylesheet" href="css/browseMenu2.css">
-    <script>
-        function showMenus() {
-            alert('this works');
-            //Show only lunch or lunch/dinner class dom elements
-            //to do this add the class when we read the data from db
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-        }
+    <script>
+        $(document).ready(function() {
+
+            function fetchUnreadNotificationsCount() {
+                $.ajax({
+                    url: "fetchUnreadNotifications.php",
+                    method: "POST",
+                    success: function(data) {
+                        $("#unreadNotification").html(data);
+                        console.log('Return count of unread notifications');
+                    }
+                })
+            }
+
+            function fetchNotifications() {
+                $.ajax({
+                    url: "fetchNotifications.php",
+                    method: "POST",
+                    success: function(data) {
+                        $("#allNotifications").html(data);
+                        console.log('Return all notifications');
+                    }
+                })
+            }
+
+            setInterval(function() {
+                fetchUnreadNotificationsCount()
+            }, 1000);
+
+            setInterval(function() {
+                fetchNotifications()
+            }, 1000);
+
+            $("#navbarDropdownMenuLink").on("click", function() {
+                $.ajax({
+                    //show all the Notifications
+                    //the first one will be highlighted
+                    url: "readNotifications.php",
+                    success: function() {
+                        console.log('Update Success');
+                    }
+                });
+            });
+
+            function showMenus() {
+                alert('this works');
+                //Show only lunch or lunch/dinner class dom elements
+                //to do this add the class when we read the data from db
+
+            }
+
+        });
     </script>
 
 <body>
-    <h1>Welcome to MIYA, <?php echo $_SESSION['userName'] ?></h2>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">MIYA</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Table Number - <?php echo $_SESSION['table number'] ?></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="browseMenu2.php">Browse Menus</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="showCart.php">Check Cart</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="addIndividuals.php">Add Friends</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Notifications (<span id="unreadNotification"></span>)
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" id="allNotifications">
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <h1>Welcome to MIYA, <?php echo $_SESSION['userName'] ?>     
+    You are <?php echo $_SESSION['customer type'];
+ ?></h2>
         <h2>You are logged in</h2>
         <h1>Browse Menus here</h1>
         <?php
@@ -47,10 +148,12 @@ include_once 'C:\xampp\htdocs\MIYA - OOP\includes\readTablesMethods.inc.php';
         // var_dump($result1);
         ?>
         <!--Dropdown for Lunch and Lunch/Dinner Menus-->
+        <h3>You can call for extra service requests.</h3>
+        <?php
+        include 'serviceButtons.php';
+        ?>
 
         <div data-spy="scroll" data-target=".navbar" data-offset="50">
-
-
             <nav class="navbar navbar-expand-sm bg-light">
 
                 <!-- Links -->
@@ -193,10 +296,7 @@ include_once 'C:\xampp\htdocs\MIYA - OOP\includes\readTablesMethods.inc.php';
 
             </div>
         </div>
-        <?php
 
-
-        ?>
 
 
 </body>

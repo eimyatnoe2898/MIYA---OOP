@@ -1,6 +1,9 @@
 use `miya`;
+select * from `food orders`;
+select * from `drink orders`;
 
-
+delete from `food orders`;
+delete from `drink orders`;
 DROP TABLE if exists `food orders`;
 CREATE TABLE `food orders`
 (
@@ -15,14 +18,29 @@ CREATE TABLE `food orders`
     `name` varchar(50) NOT NULL,
 	`price` decimal(10,2) NOT NULL,
 	`quantity` int NOT NULL,
-    `to go?` boolean NOT NULL,
+    `to go` boolean NOT NULL,
 	`total price` decimal(10,2) NOT NULL,
 	`order status` varchar(25) NOT NULL,
     `customer notes` varchar(250) default null,
     PRIMARY KEY(`food order id`),
-	FOREIGN KEY (`menubook id`, `meal`, `name`, `price`) references `food menus`(`menubook id`, `meal`, `name`, `price`) on delete cascade,
-  	FOREIGN KEY (`menubook id`, `meal`, `name`, `price`) references `food menus`(`menubook id`, `meal`, `name`, `price`) on update cascade
+	FOREIGN KEY (`menubook id`) references `food menus`(`menubook id`) on delete cascade,
+  	FOREIGN KEY (`menubook id`) references `food menus`(`menubook id`) on update cascade
 );
+
+INSERT INTO `food orders`(`individual visit id`, `menubook id`, `meal`, `name`, `price`,
+ `quantity`,`to go`, `total price`, `order status`, `customer notes`) 
+ VALUES(22, "14a", "Lunch/Dinner", "Chicken Fried Rice", 11, 1, 0, 11, "added", "No Peas");
+
+select * from `food orders`;
+
+ALTER TABLE `food orders`
+ADD COLUMN `sub customer id` int AFTER `individual visit id`;
+
+ALTER TABLE `food orders`
+ALTER `sub customer id` SET DEFAULT null;
+
+ALTER TABLE `food orders`
+ADD FOREIGN KEY (`sub customer id`) REFERENCES `sub customers`(`sub customer id`);
 
 
 
@@ -37,13 +55,13 @@ CREATE TABLE `drink orders`
     `flavors/types` varchar(50) default null,
 	`price` decimal(10,2) NOT NULL,
 	`quantity` int NOT NULL,
-    `to go?` boolean NOT NULL,
+    `to go` boolean NOT NULL,
 	`total price` decimal(10,2) NOT NULL,
 	`order status` varchar(25) NOT NULL,
     `customer notes` varchar(250) default null,
     PRIMARY KEY(`drink order id`),
-	FOREIGN KEY (`main category`, `name`, `size`, `price`) references `drink menus`(`main category`, `name`, `size`, `price`) on delete cascade,
-  	FOREIGN KEY (`main category`, `name`, `size`, `price`) references `drink menus`(`main category`, `name`, `size`, `price`) on update cascade
+	FOREIGN KEY (`main category`) references `drink menus`(`main category`) on delete cascade,
+  	FOREIGN KEY (`main category`) references `drink menus`(`main category`) on update cascade
 );
 
 
@@ -59,6 +77,9 @@ CREATE TABLE `order records`
             'Dinner',
             'Lunch/Dinner') 
 	NOT NULL,
+    
+    
+    
     `main category` varchar(50) NOT NULL,
     `name` varchar(50) NOT NULL,
     `size` varchar(25),

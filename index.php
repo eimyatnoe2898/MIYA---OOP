@@ -1,6 +1,6 @@
 <?php
 // declare(strict_types = 1);
-include 'includes/autoloader.inc.php';
+// include 'includes/autoloader.inc.php';
 include 'includes/formErrorHandlers.inc.php';
 include 'includes/readTablesMethods.inc.php';
 
@@ -115,8 +115,8 @@ if (isset($_POST["guestSignin"])) {
                     //     $subCustomersLength++;
                     // }
 
-                    // $_SESSION['checked in at'] = $foundCustomer['checked in at'];
-                    // $_SESSION['checked out at'] = $foundCustomer['checked out at'];
+                    $_SESSION['checked in at'] = $foundCustomer['checked in at'];
+                    $_SESSION['checked out at'] = $foundCustomer['checked out at'];
                     $gSignInSuccess['signInAttempt'] = 'Sigining you in...';
                     header("refresh:3;url=enterTable.php");
                 }

@@ -1,0 +1,25 @@
+.tables
+{
+    background: lightgreen;
+    color:black;
+    font-size: x-large;
+    padding:2%;
+    margin:3%;
+    /* display: inline-block;     
+    position: relative;    
+    z-index: 1;     
+    padding: 3em;     
+    margin: 3em;  */
+}
+
+a:hover{
+    text-decoration: none;
+    
+
+}
+
+#occupied
+{
+    color:red;
+}
+
